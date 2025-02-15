@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pre-computed UMAP Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 12px;
+            opacity: 0;
+        }
+        .legend {
+            position: absolute;
+            right: 20px;
+            top: 100px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pre-computed UMAP Visualization</h1>
+        <div class="controls">
+            <label for="feature-select">Color by: </label>
+            <select id="feature-select">
+                <optgroup label="Categorical">
+                    <option value="cluster">HDBSCAN Cluster</option>
+                    <option value="facilitator_name">Facilitator Name</option>
+                    <option value="group">Group/Collection</option>
+                </optgroup>
+                <optgroup label="Numeric Features">
+                    <option value="cluster_probability">Cluster Probability</option>
+                    <option value="speaking_time_gini_coefficient">Speaking Time Gini Coefficient</option>
+                    <option value="turn_distribution_gini_coefficient">Turn Distribution Gini Coefficient</option>
+                    <option value="facilitator_speaking_percentage">Facilitator Speaking Percentage</option>
+                    <option value="facilitator_turns_percentage">Facilitator Turns Percentage</option>
+                    <option value="substantive_responsivity_entropy">Substantive Responsivity Entropy</option>
+                    <option value="turn_sequence_entropy">Turn Sequence Entropy</option>
+                    <option value="num_observed_speakers">Number of Speakers</option>
+                </optgroup>
+            </select>
+        </div>
+        <div id="visualization"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 

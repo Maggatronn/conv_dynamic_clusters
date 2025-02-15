@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UMAP Visualization with HDBSCAN Clustering</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0;
+            font-size: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 5px;
+            font-size: 14px;
+        }
+        .legend text {
+            font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UMAP Visualization with HDBSCAN Clustering</h1>
+        <div class="controls">
+            <label for="color-by">Color by: </label>
+            <select id="color-by">
+                <option value="cluster">HDBSCAN Cluster</option>
+                <option value="cluster_probability">Cluster Probability</option>
+                <option value="facilitator_name">Facilitator Name</option>
+                <option value="group">Group/Collection</option>
+            </select>
+        </div>
+        <div id="visualization"></div>
+    </div>
+
+  <script>
+        // Load the data
+        d3.json('umapped_data.json').then(function(data) {
+            // Set up the dimensions
+            const width = 1000;
+            const height = 600;
+            const margin = { top: 40, right: 150, bottom: 40, left: 40 };
+
+            // Create the SVG container
+            const svg = d3.select("#visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Create tooltip
+            const tooltip = d3.select("body")
+                .append("div")
+                .attr("class", "tooltip");
+
+            function updateVisualization(selectedFeature) {
+                // Clear previous visualization
+                svg.selectAll("*").remove();
+
+                // Create scales for x and y axes based on UMAP coordinates
+                const xScale = d3.scaleLinear()
+                    .domain([d3.min(data, d => d.umap_x), d3.max(data, d => d.umap_x)])
+                    .range([margin.left, width - margin.right]);
+
+                const yScale = d3.scaleLinear()
+                    .domain([d3.min(data, d => d.umap_y), d3.max(data, d => d.umap_y)])
+                    .range([height - margin.bottom, margin.top]);
+
+                // Determine if the selected feature is categorical
+                const categoricalFeatures = ['cluster', 'facilitator_name', 'group'];
+                const isCategorical = categoricalFeatures.includes(selectedFeature);
+
+                // Create appropriate color scale based on feature type
+                let colorScale;
+                if (selectedFeature === 'cluster') {
+                    // Special handling for clusters
+                    const uniqueClusters = [...new Set(data.map(d => d.cluster))].sort((a, b) => a - b);
+                    colorScale = d3.scaleOrdinal()
+                        .domain(uniqueClusters)
+                        .range(uniqueClusters.map(cluster => 
+                            cluster === -1 ? '#808080' : d3.schemeCategory10[cluster % 10]
+                        ));
+                } else if (isCategorical) {
+                    const uniqueValues = [...new Set(data.map(d => d[selectedFeature]))];
+                    colorScale = d3.scaleOrdinal()
+                        .domain(uniqueValues)
+                        .range(d3.schemeCategory10);
+                } else {
+                    colorScale = d3.scaleSequential()
+                        .domain([
+                            d3.min(data, d => d[selectedFeature]),
+                            d3.max(data, d => d[selectedFeature])
+                        ])
+                        .interpolator(d3.interpolateViridis);
+                }
+
+                // Add axes
+                const xAxis = d3.axisBottom(xScale);
+                const yAxis = d3.axisLeft(yScale);
+
+                svg.append("g")
+                    .attr("transform", `translate(0,${height - margin.bottom})`)
+                    .call(xAxis);
+
+                svg.append("g")
+                    .attr("transform", `translate(${margin.left},0)`)
+                    .call(yAxis);
+
+                // Add axis labels
+                svg.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height - 5)
+                    .attr("text-anchor", "middle")
+                    .text("UMAP Dimension 1");
+
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -height / 2)
+                    .attr("y", 15)
+                    .attr("text-anchor", "middle")
+                    .text("UMAP Dimension 2");
+
+                // Add dots
+                svg.selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", d => xScale(d.umap_x))
+                    .attr("cy", d => yScale(d.umap_y))
+                    .attr("r", 6)
+                    .attr("fill", d => colorScale(d[selectedFeature]))
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1)
+                    .attr("opacity", selectedFeature === 'cluster' ? 
+                        d => d.cluster === -1 ? 0.5 : 1 : 1)
+                    .on("mouseover", function(event, d) {
+                        d3.select(this)
+                            .attr("r", 8)
+                            .attr("stroke-width", 2);
+                        
+                        let featureValue = isCategorical ? 
+                            d[selectedFeature] : 
+                            d[selectedFeature].toFixed(3);
+                        
+                        tooltip.style("opacity", 1)
+                            .html(`
+                                <strong>Conversation ID:</strong> ${d.conv_id}<br>
+                                <strong>Cluster:</strong> ${d.cluster === -1 ? 'Noise' : d.cluster}<br>
+                                <strong>Cluster Probability:</strong> ${d.cluster_probability.toFixed(3)}<br>
+                                <strong>Facilitator:</strong> ${d.facilitator_name}<br>
+                                <strong>Group:</strong> ${d.group}<br>
+                                <strong>Selected Feature:</strong> ${featureValue}
+                            `)
+                            .style("left", (event.pageX + 10) + "px")
+                            .style("top", (event.pageY - 10) + "px");
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .attr("r", 6)
+                            .attr("stroke-width", 1);
+                        tooltip.style("opacity", 0);
+                    });
+
+                // Add legend
+                if (isCategorical) {
+                    const legendSpacing = 20;
+                    const legendRectSize = 15;
+                    let uniqueValues;
+                    
+                    if (selectedFeature === 'cluster') {
+                        uniqueValues = [...new Set(data.map(d => d.cluster))]
+                            .sort((a, b) => a - b)
+                            .map(cluster => cluster === -1 ? 'Noise' : `Cluster ${cluster}`);
+                    } else {
+                        uniqueValues = [...new Set(data.map(d => d[selectedFeature]))];
+                    }
+                    
+                    const legend = svg.append("g")
+                        .attr("class", "legend")
+                        .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
+
+                    const legendItems = legend.selectAll(".legend-item")
+                        .data(uniqueValues)
+                        .enter()
+                        .append("g")
+                        .attr("class", "legend-item")
+                        .attr("transform", (d, i) => `translate(0, ${i * legendSpacing})`);
+
+                    legendItems.append("rect")
+                        .attr("width", legendRectSize)
+                        .attr("height", legendRectSize)
+                        .style("fill", d => {
+                            if (selectedFeature === 'cluster') {
+                                const cluster = d === 'Noise' ? -1 : parseInt(d.split(' ')[1]);
+                                return colorScale(cluster);
+                            }
+                            return colorScale(d);
+                        })
+                        .style("opacity", d => {
+                            if (selectedFeature === 'cluster') {
+                                return d === 'Noise' ? 0.5 : 1;
+                            }
+                            return 1;
+                        });
+
+                    legendItems.append("text")
+                        .attr("x", legendRectSize + 5)
+                        .attr("y", legendRectSize - 3)
+                        .text(d => d);
+                } else {
+                    // Create continuous color legend
+                    const legendWidth = 20;
+                    const legendHeight = 200;
+                    
+                    const legendScale = d3.scaleLinear()
+                        .domain(colorScale.domain())
+                        .range([legendHeight, 0]);
+
+                    const legend = svg.append("g")
+                        .attr("class", "legend")
+                        .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
+
+                    const defs = legend.append("defs");
+                    const linearGradient = defs.append("linearGradient")
+                        .attr("id", "linear-gradient")
+                        .attr("x1", "0%")
+                        .attr("y1", "100%")
+                        .attr("x2", "0%")
+                        .attr("y2", "0%");
+
+                    linearGradient.selectAll("stop")
+                        .data(d3.range(0, 1.1, 0.1))
+                        .enter()
+                        .append("stop")
+                        .attr("offset", d => d * 100 + "%")
+                        .attr("stop-color", d => colorScale(d3.scaleLinear().domain([0, 1]).range(colorScale.domain())(d)));
+
+                    legend.append("rect")
+                        .attr("width", legendWidth)
+                        .attr("height", legendHeight)
+                        .style("fill", "url(#linear-gradient)");
+
+                    const legendAxis = d3.axisRight(legendScale)
+                        .ticks(5);
+
+                    legend.append("g")
+                        .attr("transform", `translate(${legendWidth}, 0)`)
+                        .call(legendAxis);
+                }
+            }
+
+            // Event listener for dropdown changes
+            d3.select("#color-by").on("change", function() {
+                updateVisualization(this.value);
+            });
+
+            // Initial visualization with HDBSCAN clusters
+            updateVisualization("cluster");
+        });
+  </script>
+</body>
+</html>
