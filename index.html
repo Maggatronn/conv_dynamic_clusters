@@ -177,6 +177,63 @@
         #correlation-scatter {
             margin-top: 40px;
         }
+        .feature-selector-container {
+            position: relative;
+            width: 100%;
+        }
+        .feature-selector-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .feature-selector-btn:hover {
+            border-color: #aaa;
+        }
+        .feature-selector-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+            margin-top: 4px;
+            padding: 8px;
+        }
+        .feature-selector-dropdown.show {
+            display: block;
+        }
+        .feature-group {
+            margin-bottom: 12px;
+        }
+        .feature-group > label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            color: #333;
+        }
+        .feature-options {
+            margin-left: 20px;
+        }
+        .feature-options label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #666;
+        }
+        .feature-checkbox, .group-checkbox {
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
@@ -232,6 +289,72 @@
 
         <div class="visualization-section">
             <div class="visualization-title">Cluster Feature Distribution</div>
+            <div class="control-group" style="max-width: 300px; margin-bottom: 20px;">
+                <label for="feature-selector">Select Features:</label>
+                <div class="feature-selector-container">
+                    <button id="feature-selector-btn" class="feature-selector-btn">Select Features ▼</button>
+                    <div id="feature-selector-dropdown" class="feature-selector-dropdown">
+                        <div class="feature-selector-groups">
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="all"> Select All</label>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="gini"> Gini Coefficients</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="speaking_time_gini_coefficient"> Speaking Time Gini</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="turn_distribution_gini_coefficient"> Turn Distribution Gini</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="non_facilitator_speaking_gini_coefficient"> Non-Facilitator Speaking Gini</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="non_facilitator_turn_gini_coefficient"> Non-Facilitator Turn Gini</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="gini_subst_responded_rate_nonself"> Substantive Response Rate Gini (Non-self)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="gini_subst_responded_rate_nonself_nonfac"> Substantive Response Rate Gini (Non-self, Non-fac)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="gini_subst_responded_rate_nonself_exclfac"> Substantive Response Rate Gini (Non-self, Excl-fac)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="gini" value="gini_subst_responded_rate_nonself_nonfac_exclfac"> Substantive Response Rate Gini (Non-self, Non-fac, Excl-fac)</label>
+                                </div>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="entropy"> Entropy Metrics</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="entropy" value="turn_sequence_entropy"> Turn Sequence Entropy</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="entropy" value="substantive_responsivity_entropy"> Substantive Responsivity</label>
+                                </div>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="facilitator"> Facilitator Metrics</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="facilitator" value="facilitator_speaking_percentage"> Facilitator Speaking %</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="facilitator" value="facilitator_turns_percentage"> Facilitator Turns %</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="facilitator" value="num_turns_facilitator"> Facilitator Turns</label>
+                                </div>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="conversation"> Conversation Metrics</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="conversation" value="num_observed_speakers"> Number of Speakers</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="conversation" value="total_turns_in_conversation"> Total Turns</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="conversation" value="total_speaking_time_seconds"> Speaking Time (s)</label>
+                                </div>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="response"> Response Rates</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_subst_responded_rate"> Average Substantive Response Rate</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_mech_responded_rate"> Average Mechanical Response Rate</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_subst_responded_rate_nonself"> Substantive Response Rate (Non-self)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_subst_responded_rate_nonself_nonfac"> Substantive Response Rate (Non-self, Non-fac)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_subst_responded_rate_nonself_exclfac"> Substantive Response Rate (Non-self, Excl-fac)</label>
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="response" value="avg_subst_responded_rate_nonself_nonfac_exclfac"> Substantive Response Rate (Non-self, Non-fac, Excl-fac)</label>
+                                </div>
+                            </div>
+                            <div class="feature-group">
+                                <label><input type="checkbox" class="group-checkbox" data-group="clustering"> Clustering</label>
+                                <div class="feature-options">
+                                    <label><input type="checkbox" class="feature-checkbox" data-group="clustering" value="cluster_probability"> Cluster Probability</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="feature-heatmap"></div>
         </div>
 
@@ -257,9 +380,9 @@
                     <label for="scatter-x">X-Axis:</label>
                     <select id="scatter-x">
                         <optgroup label="Conversation Metrics">
+                            <option value="num_observed_speakers">Number of Participants</option>
                             <option value="total_turns_in_conversation">Total Turns</option>
                             <option value="total_speaking_time_seconds">Speaking Time (seconds)</option>
-                            <option value="num_observed_speakers">Number of Speakers</option>
                             <option value="num_turns_in_conversation">Number of Turns</option>
                             <option value="num_turns_facilitator">Facilitator Turns</option>
                         </optgroup>
@@ -300,9 +423,9 @@
                     <label for="scatter-y">Y-Axis:</label>
                     <select id="scatter-y">
                         <optgroup label="Conversation Metrics">
+                            <option value="num_observed_speakers">Number of Participants</option>
                             <option value="total_turns_in_conversation">Total Turns</option>
                             <option value="total_speaking_time_seconds">Speaking Time (seconds)</option>
-                            <option value="num_observed_speakers">Number of Speakers</option>
                             <option value="num_turns_in_conversation">Number of Turns</option>
                             <option value="num_turns_facilitator">Facilitator Turns</option>
                         </optgroup>
@@ -372,6 +495,97 @@
             const defaultPointSize = 6;
             const defaultOpacity = 0.8;
 
+            // Initialize feature selector
+            const btn = document.getElementById('feature-selector-btn');
+            const dropdown = document.getElementById('feature-selector-dropdown');
+            const allCheckbox = document.querySelector('.group-checkbox[data-group="all"]');
+            const groupCheckboxes = document.querySelectorAll('.group-checkbox:not([data-group="all"])');
+            const featureCheckboxes = document.querySelectorAll('.feature-checkbox');
+            
+            // Initialize with some default selected features
+            const defaultFeatures = [
+                'speaking_time_gini_coefficient',
+                'turn_sequence_entropy',
+                'substantive_responsivity_entropy',
+                'facilitator_speaking_percentage',
+                'num_observed_speakers'
+            ];
+            
+            featureCheckboxes.forEach(checkbox => {
+                if (defaultFeatures.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+            
+            // Update button text initially
+            btn.textContent = `${defaultFeatures.length} Features Selected ▼`;
+            
+            // Toggle dropdown
+            btn.addEventListener('click', function() {
+                dropdown.classList.toggle('show');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            // Handle "Select All" checkbox
+            allCheckbox.addEventListener('change', function() {
+                const checked = this.checked;
+                groupCheckboxes.forEach(checkbox => checkbox.checked = checked);
+                featureCheckboxes.forEach(checkbox => checkbox.checked = checked);
+                createFeatureHeatmap();
+            });
+            
+            // Handle group checkboxes
+            groupCheckboxes.forEach(groupCheckbox => {
+                groupCheckbox.addEventListener('change', function() {
+                    const group = this.dataset.group;
+                    const checked = this.checked;
+                    document.querySelectorAll(`.feature-checkbox[data-group="${group}"]`)
+                        .forEach(checkbox => checkbox.checked = checked);
+                    updateAllCheckbox();
+                    createFeatureHeatmap();
+                });
+            });
+            
+            // Handle individual feature checkboxes
+            featureCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateGroupCheckbox(this.dataset.group);
+                    updateAllCheckbox();
+                    createFeatureHeatmap();
+                });
+            });
+            
+            function updateGroupCheckbox(group) {
+                const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
+                const groupFeatures = document.querySelectorAll(`.feature-checkbox[data-group="${group}"]`);
+                const allChecked = Array.from(groupFeatures).every(checkbox => checkbox.checked);
+                const someChecked = Array.from(groupFeatures).some(checkbox => checkbox.checked);
+                groupCheckbox.checked = allChecked;
+                groupCheckbox.indeterminate = someChecked && !allChecked;
+            }
+            
+            function updateAllCheckbox() {
+                const allChecked = Array.from(featureCheckboxes).every(checkbox => checkbox.checked);
+                const someChecked = Array.from(featureCheckboxes).some(checkbox => checkbox.checked);
+                allCheckbox.checked = allChecked;
+                allCheckbox.indeterminate = someChecked && !allChecked;
+            }
+            
+            function getSelectedFeatures() {
+                return Array.from(featureCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => ({
+                        id: checkbox.value,
+                        name: checkbox.parentElement.textContent.trim()
+                    }));
+            }
+
             // Populate filter dropdowns
             const groups = [...new Set(data.map(d => d.group))].sort();
             const collections = [...new Set(data.map(d => d.coll_title))].sort();
@@ -400,7 +614,9 @@
                 return data.filter(d => {
                     const groupMatch = selectedGroup === "all" || d.group === selectedGroup;
                     const collectionMatch = selectedCollection === "all" || d.coll_title === selectedCollection;
-                    return groupMatch && collectionMatch;
+                    // Add filter to exclude noise points (cluster -1)
+                    const isNotNoise = d.cluster !== -1;
+                    return groupMatch && collectionMatch && isNotNoise;
                 });
             }
 
@@ -680,9 +896,7 @@
                     const uniqueClusters = [...new Set(filteredData.map(d => d.cluster))].sort((a, b) => a - b);
                     colorScale = d3.scaleOrdinal()
                         .domain(uniqueClusters)
-                        .range(uniqueClusters.map(cluster => 
-                            cluster === -1 ? '#808080' : d3.schemeTableau10[cluster % 10]
-                        ));
+                        .range(uniqueClusters.map(cluster => d3.schemeTableau10[cluster % 10]));
                 } else if (isCategorical) {
                     const uniqueValues = [...new Set(filteredData.map(d => d[selectedFeature]))];
                     colorScale = d3.scaleOrdinal()
@@ -744,8 +958,7 @@
                             return isCategorical ? value : Number(value).toFixed(3);
                         };
 
-                        const clusterValue = d.cluster === undefined ? 'N/A' : 
-                                           d.cluster === -1 ? 'Noise' : d.cluster;
+                        const clusterValue = d.cluster === undefined ? 'N/A' : `Cluster ${d.cluster}`;
                         const probabilityValue = d.cluster_probability === undefined ? 'N/A' : 
                                                Number(d.cluster_probability).toFixed(3);
                         
@@ -779,7 +992,7 @@
                     if (selectedFeature === 'cluster') {
                         uniqueValues = [...new Set(filteredData.map(d => d.cluster))]
                             .sort((a, b) => a - b)
-                            .map(cluster => cluster === -1 ? 'Noise' : `Cluster ${cluster}`);
+                            .map(cluster => `Cluster ${cluster}`);
                     } else {
                         uniqueValues = [...new Set(filteredData.map(d => d[selectedFeature]))];
                     }
@@ -1001,12 +1214,9 @@
                 // Create appropriate color scale
                 let colorScale;
                 if (colorFeature === 'cluster') {
-                    const uniqueClusters = [...new Set(filteredData.map(d => d[colorFeature]))].sort((a, b) => a - b);
-                    colorScale = d3.scaleOrdinal()
-                        .domain(uniqueClusters)
-                        .range(uniqueClusters.map(cluster => 
-                            cluster === -1 ? '#808080' : d3.schemeTableau10[cluster % 10]
-                        ));
+                    const uniqueClusters = [...new Set(filteredData.map(d => d[colorFeature]))]
+                        .sort((a, b) => a - b)
+                        .map(cluster => `Cluster ${cluster}`);
                 } else if (isCategorical) {
                     const uniqueValues = [...new Set(filteredData.map(d => d[colorFeature]))];
                     colorScale = d3.scaleOrdinal()
@@ -1118,7 +1328,7 @@
                     if (colorFeature === 'cluster') {
                         uniqueValues = [...new Set(filteredData.map(d => d[colorFeature]))]
                             .sort((a, b) => a - b)
-                            .map(cluster => cluster === -1 ? 'Noise' : `Cluster ${cluster}`);
+                            .map(cluster => `Cluster ${cluster}`);
                     } else {
                         uniqueValues = [...new Set(filteredData.map(d => d[colorFeature]))];
                     }
@@ -1160,7 +1370,7 @@
                         .on("mouseover", function(event, d) {
                             // Get the value to match against
                             const matchValue = colorFeature === 'cluster' ? 
-                                (d === 'Noise' ? -1 : parseInt(d.split(' ')[1])) : d;
+                                parseInt(d.split(' ')[1]) : d;
                             
                             // Update opacity of points
                             scatterSvg.selectAll("circle")
@@ -1187,7 +1397,7 @@
                         .on("mouseover", function(event, d) {
                             // Get the value to match against
                             const matchValue = colorFeature === 'cluster' ? 
-                                (d === 'Noise' ? -1 : parseInt(d.split(' ')[1])) : d;
+                                parseInt(d.split(' ')[1]) : d;
                             
                             // Update opacity of points
                             scatterSvg.selectAll("circle")
@@ -1261,33 +1471,22 @@
 
                 const filteredData = getFilteredData();
                 
-                // Define features to include
-                const features = [
-                    {id: 'speaking_time_gini_coefficient', name: 'Speaking Time Gini'},
-                    {id: 'turn_distribution_gini_coefficient', name: 'Turn Distribution Gini'},
-                    {id: 'non_facilitator_speaking_gini_coefficient', name: 'Non-Facilitator Speaking Gini'},
-                    {id: 'non_facilitator_turn_gini_coefficient', name: 'Non-Facilitator Turn Gini'},
-                    {id: 'facilitator_speaking_percentage', name: 'Facilitator Speaking %'},
-                    {id: 'facilitator_turns_percentage', name: 'Facilitator Turns %'},
-                    {id: 'turn_sequence_entropy', name: 'Turn Sequence Entropy'},
-                    {id: 'substantive_responsivity_entropy', name: 'Substantive Responsivity'},
-                    {id: 'num_observed_speakers', name: 'Number of Speakers'},
-                    {id: 'num_turns_in_conversation', name: 'Number of Turns'},
-                    {id: 'num_turns_facilitator', name: 'Facilitator Turns'},
-                    {id: 'total_turns_in_conversation', name: 'Total Turns'},
-                    {id: 'total_speaking_time_seconds', name: 'Speaking Time (s)'},
-                    {id: 'avg_subst_responded_rate', name: 'Avg Substantive Response Rate'},
-                    {id: 'avg_mech_responded_rate', name: 'Avg Mechanical Response Rate'},
-                    {id: 'avg_subst_responded_rate_nonself', name: 'Substantive Response Rate (Non-self)'},
-                    {id: 'avg_subst_responded_rate_nonself_nonfac', name: 'Substantive Response Rate (Non-self, Non-fac)'},
-                    {id: 'avg_subst_responded_rate_nonself_exclfac', name: 'Substantive Response Rate (Non-self, Excl-fac)'},
-                    {id: 'avg_subst_responded_rate_nonself_nonfac_exclfac', name: 'Substantive Response Rate (Non-self, Non-fac, Excl-fac)'},
-                    {id: 'gini_subst_responded_rate_nonself', name: 'Substantive Response Rate Gini (Non-self)'},
-                    {id: 'gini_subst_responded_rate_nonself_nonfac', name: 'Substantive Response Rate Gini (Non-self, Non-fac)'},
-                    {id: 'gini_subst_responded_rate_nonself_exclfac', name: 'Substantive Response Rate Gini (Non-self, Excl-fac)'},
-                    {id: 'gini_subst_responded_rate_nonself_nonfac_exclfac', name: 'Substantive Response Rate Gini (Non-self, Non-fac, Excl-fac)'},
-                    {id: 'cluster_probability', name: 'Cluster Probability'}
-                ];
+                // Get selected features
+                const features = getSelectedFeatures();
+                
+                if (features.length === 0) {
+                    d3.select("#feature-heatmap")
+                        .append("p")
+                        .style("text-align", "center")
+                        .style("color", "#666")
+                        .style("padding", "20px")
+                        .text("Please select at least one feature to display.");
+                    return;
+                }
+
+                // Update button text
+                document.getElementById('feature-selector-btn').textContent = 
+                    `${features.length} Feature${features.length === 1 ? '' : 's'} Selected ▼`;
 
                 // Get unique clusters, including -1 for noise points
                 const clusters = [...new Set(filteredData.map(d => d.cluster))]
@@ -1314,7 +1513,7 @@
                 // Set up dimensions
                 const cellWidth = 80;
                 const cellHeight = 40;
-                const margin = { top: 60, right: 60, bottom: 40, left: 200 };
+                const margin = { top: 60, right: 60, bottom: 40, left: 300 };
                 const width = clusters.length * cellWidth + margin.left + margin.right;
                 const height = features.length * cellHeight + margin.top + margin.bottom;
 
@@ -1360,7 +1559,7 @@
                             .on("mouseover", function(event) {
                                 tooltip.style("opacity", 1)
                                     .html(`
-                                        <strong>${cluster === -1 ? 'Noise' : cluster}</strong><br>
+                                        <strong>${cluster === -1 ? 'Noise' : 'Cluster ' + cluster}</strong><br>
                                         <strong>${feature.name}:</strong> ${value !== null && !isNaN(value) ? value.toFixed(3) : 'N/A'}<br>
                                         <strong>Cluster size:</strong> ${filteredData.filter(d => d.cluster === cluster).length} conversations
                                     `)
@@ -1415,7 +1614,7 @@
                         .attr("text-anchor", "middle")
                         .style("font-size", "12px")
                         .style("font-weight", "600")
-                        .text(cluster === -1 ? "Noise" : cluster);
+                        .text(cluster);
                 });
 
                 // Add title
@@ -1457,6 +1656,123 @@
             updateVisualization();
             createFeatureHeatmap();
             createCorrelationScatter();
+
+            // Add this after the existing script tag content
+            document.addEventListener('DOMContentLoaded', function() {
+                const btn = document.getElementById('feature-selector-btn');
+                const dropdown = document.getElementById('feature-selector-dropdown');
+                const allCheckbox = document.querySelector('.group-checkbox[data-group="all"]');
+                const groupCheckboxes = document.querySelectorAll('.group-checkbox:not([data-group="all"])');
+                const featureCheckboxes = document.querySelectorAll('.feature-checkbox');
+                
+                // Initialize with some default selected features
+                const defaultFeatures = [
+                    'speaking_time_gini_coefficient',
+                    'turn_sequence_entropy',
+                    'substantive_responsivity_entropy',
+                    'facilitator_speaking_percentage',
+                    'num_observed_speakers'
+                ];
+                
+                featureCheckboxes.forEach(checkbox => {
+                    if (defaultFeatures.includes(checkbox.value)) {
+                        checkbox.checked = true;
+                    }
+                });
+                
+                // Toggle dropdown
+                btn.addEventListener('click', function() {
+                    dropdown.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+                
+                // Handle "Select All" checkbox
+                allCheckbox.addEventListener('change', function() {
+                    const checked = this.checked;
+                    groupCheckboxes.forEach(checkbox => checkbox.checked = checked);
+                    featureCheckboxes.forEach(checkbox => checkbox.checked = checked);
+                    updateFeatureHeatmap();
+                });
+                
+                // Handle group checkboxes
+                groupCheckboxes.forEach(groupCheckbox => {
+                    groupCheckbox.addEventListener('change', function() {
+                        const group = this.dataset.group;
+                        const checked = this.checked;
+                        document.querySelectorAll(`.feature-checkbox[data-group="${group}"]`)
+                            .forEach(checkbox => checkbox.checked = checked);
+                        updateAllCheckbox();
+                        updateFeatureHeatmap();
+                    });
+                });
+                
+                // Handle individual feature checkboxes
+                featureCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        updateGroupCheckbox(this.dataset.group);
+                        updateAllCheckbox();
+                        updateFeatureHeatmap();
+                    });
+                });
+                
+                function updateGroupCheckbox(group) {
+                    const groupCheckbox = document.querySelector(`.group-checkbox[data-group="${group}"]`);
+                    const groupFeatures = document.querySelectorAll(`.feature-checkbox[data-group="${group}"]`);
+                    const allChecked = Array.from(groupFeatures).every(checkbox => checkbox.checked);
+                    const someChecked = Array.from(groupFeatures).some(checkbox => checkbox.checked);
+                    groupCheckbox.checked = allChecked;
+                    groupCheckbox.indeterminate = someChecked && !allChecked;
+                }
+                
+                function updateAllCheckbox() {
+                    const allChecked = Array.from(featureCheckboxes).every(checkbox => checkbox.checked);
+                    const someChecked = Array.from(featureCheckboxes).some(checkbox => checkbox.checked);
+                    allCheckbox.checked = allChecked;
+                    allCheckbox.indeterminate = someChecked && !allChecked;
+                }
+                
+                function getSelectedFeatures() {
+                    return Array.from(featureCheckboxes)
+                        .filter(checkbox => checkbox.checked)
+                        .map(checkbox => ({
+                            id: checkbox.value,
+                            name: checkbox.parentElement.textContent.trim()
+                        }));
+                }
+                
+                // Update the createFeatureHeatmap function to use selected features
+                window.createFeatureHeatmap = function() {
+                    const selectedFeatures = getSelectedFeatures();
+                    if (selectedFeatures.length === 0) {
+                        d3.select("#feature-heatmap").html("<p>Please select at least one feature to display.</p>");
+                        return;
+                    }
+                    
+                    // Update the button text to show number of selected features
+                    btn.textContent = `${selectedFeatures.length} Features Selected ▼`;
+                    
+                    // Rest of the createFeatureHeatmap function remains the same,
+                    // but use selectedFeatures instead of the hardcoded features array
+                    // ... existing createFeatureHeatmap code ...
+                    
+                    // Clear previous heatmap
+                    d3.select("#feature-heatmap").selectAll("*").remove();
+
+                    const filteredData = getFilteredData();
+                    
+                    // Use selected features instead of hardcoded features
+                    const features = selectedFeatures;
+                    
+                    // Rest of the function remains the same
+                    // ... (copy the rest of the createFeatureHeatmap function here)
+                }
+            });
         });
     </script>
 </body>
