@@ -260,6 +260,8 @@
                             <option value="total_turns_in_conversation">Total Turns</option>
                             <option value="total_speaking_time_seconds">Speaking Time (seconds)</option>
                             <option value="num_observed_speakers">Number of Speakers</option>
+                            <option value="num_turns_in_conversation">Number of Turns</option>
+                            <option value="num_turns_facilitator">Facilitator Turns</option>
                         </optgroup>
                         <optgroup label="Facilitator Metrics">
                             <option value="facilitator_speaking_percentage">Facilitator Speaking %</option>
@@ -271,6 +273,10 @@
                             <option value="turn_distribution_gini_coefficient">Turn Distribution Gini</option>
                             <option value="non_facilitator_speaking_gini_coefficient">Non-Facilitator Speaking Gini</option>
                             <option value="non_facilitator_turn_gini_coefficient">Non-Facilitator Turn Gini</option>
+                            <option value="gini_subst_responded_rate_nonself">Substantive Response Rate Gini (Non-self)</option>
+                            <option value="gini_subst_responded_rate_nonself_nonfac">Substantive Response Rate Gini (Non-self, Non-fac)</option>
+                            <option value="gini_subst_responded_rate_nonself_exclfac">Substantive Response Rate Gini (Non-self, Excl-fac)</option>
+                            <option value="gini_subst_responded_rate_nonself_nonfac_exclfac">Substantive Response Rate Gini (Non-self, Non-fac, Excl-fac)</option>
                         </optgroup>
                         <optgroup label="Entropy Metrics">
                             <option value="turn_sequence_entropy">Turn Sequence Entropy</option>
@@ -281,6 +287,8 @@
                             <option value="avg_mech_responded_rate">Average Mechanical Response Rate</option>
                             <option value="avg_subst_responded_rate_nonself">Substantive Response Rate (Non-self)</option>
                             <option value="avg_subst_responded_rate_nonself_nonfac">Substantive Response Rate (Non-self, Non-fac)</option>
+                            <option value="avg_subst_responded_rate_nonself_exclfac">Substantive Response Rate (Non-self, Excl-fac)</option>
+                            <option value="avg_subst_responded_rate_nonself_nonfac_exclfac">Substantive Response Rate (Non-self, Non-fac, Excl-fac)</option>
                         </optgroup>
                         <optgroup label="Clustering">
                             <option value="cluster_probability">Cluster Probability</option>
@@ -295,6 +303,8 @@
                             <option value="total_turns_in_conversation">Total Turns</option>
                             <option value="total_speaking_time_seconds">Speaking Time (seconds)</option>
                             <option value="num_observed_speakers">Number of Speakers</option>
+                            <option value="num_turns_in_conversation">Number of Turns</option>
+                            <option value="num_turns_facilitator">Facilitator Turns</option>
                         </optgroup>
                         <optgroup label="Facilitator Metrics">
                             <option value="facilitator_speaking_percentage">Facilitator Speaking %</option>
@@ -306,6 +316,10 @@
                             <option value="turn_distribution_gini_coefficient">Turn Distribution Gini</option>
                             <option value="non_facilitator_speaking_gini_coefficient">Non-Facilitator Speaking Gini</option>
                             <option value="non_facilitator_turn_gini_coefficient">Non-Facilitator Turn Gini</option>
+                            <option value="gini_subst_responded_rate_nonself">Substantive Response Rate Gini (Non-self)</option>
+                            <option value="gini_subst_responded_rate_nonself_nonfac">Substantive Response Rate Gini (Non-self, Non-fac)</option>
+                            <option value="gini_subst_responded_rate_nonself_exclfac">Substantive Response Rate Gini (Non-self, Excl-fac)</option>
+                            <option value="gini_subst_responded_rate_nonself_nonfac_exclfac">Substantive Response Rate Gini (Non-self, Non-fac, Excl-fac)</option>
                         </optgroup>
                         <optgroup label="Entropy Metrics">
                             <option value="turn_sequence_entropy">Turn Sequence Entropy</option>
@@ -316,6 +330,8 @@
                             <option value="avg_mech_responded_rate">Average Mechanical Response Rate</option>
                             <option value="avg_subst_responded_rate_nonself">Substantive Response Rate (Non-self)</option>
                             <option value="avg_subst_responded_rate_nonself_nonfac">Substantive Response Rate (Non-self, Non-fac)</option>
+                            <option value="avg_subst_responded_rate_nonself_exclfac">Substantive Response Rate (Non-self, Excl-fac)</option>
+                            <option value="avg_subst_responded_rate_nonself_nonfac_exclfac">Substantive Response Rate (Non-self, Non-fac, Excl-fac)</option>
                         </optgroup>
                         <optgroup label="Clustering">
                             <option value="cluster_probability">Cluster Probability</option>
@@ -1249,13 +1265,27 @@
                 const features = [
                     {id: 'speaking_time_gini_coefficient', name: 'Speaking Time Gini'},
                     {id: 'turn_distribution_gini_coefficient', name: 'Turn Distribution Gini'},
+                    {id: 'non_facilitator_speaking_gini_coefficient', name: 'Non-Facilitator Speaking Gini'},
+                    {id: 'non_facilitator_turn_gini_coefficient', name: 'Non-Facilitator Turn Gini'},
                     {id: 'facilitator_speaking_percentage', name: 'Facilitator Speaking %'},
+                    {id: 'facilitator_turns_percentage', name: 'Facilitator Turns %'},
                     {id: 'turn_sequence_entropy', name: 'Turn Sequence Entropy'},
                     {id: 'substantive_responsivity_entropy', name: 'Substantive Responsivity'},
                     {id: 'num_observed_speakers', name: 'Number of Speakers'},
+                    {id: 'num_turns_in_conversation', name: 'Number of Turns'},
+                    {id: 'num_turns_facilitator', name: 'Facilitator Turns'},
                     {id: 'total_turns_in_conversation', name: 'Total Turns'},
                     {id: 'total_speaking_time_seconds', name: 'Speaking Time (s)'},
-                    {id: 'avg_subst_responded_rate', name: 'Substantive Response Rate'},
+                    {id: 'avg_subst_responded_rate', name: 'Avg Substantive Response Rate'},
+                    {id: 'avg_mech_responded_rate', name: 'Avg Mechanical Response Rate'},
+                    {id: 'avg_subst_responded_rate_nonself', name: 'Substantive Response Rate (Non-self)'},
+                    {id: 'avg_subst_responded_rate_nonself_nonfac', name: 'Substantive Response Rate (Non-self, Non-fac)'},
+                    {id: 'avg_subst_responded_rate_nonself_exclfac', name: 'Substantive Response Rate (Non-self, Excl-fac)'},
+                    {id: 'avg_subst_responded_rate_nonself_nonfac_exclfac', name: 'Substantive Response Rate (Non-self, Non-fac, Excl-fac)'},
+                    {id: 'gini_subst_responded_rate_nonself', name: 'Substantive Response Rate Gini (Non-self)'},
+                    {id: 'gini_subst_responded_rate_nonself_nonfac', name: 'Substantive Response Rate Gini (Non-self, Non-fac)'},
+                    {id: 'gini_subst_responded_rate_nonself_exclfac', name: 'Substantive Response Rate Gini (Non-self, Excl-fac)'},
+                    {id: 'gini_subst_responded_rate_nonself_nonfac_exclfac', name: 'Substantive Response Rate Gini (Non-self, Non-fac, Excl-fac)'},
                     {id: 'cluster_probability', name: 'Cluster Probability'}
                 ];
 
